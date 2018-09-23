@@ -1,12 +1,13 @@
-interface LoadEvent extends Event {
+export interface LoadEvent extends Event {
   type: 'load'
 }
 
-interface ErrorEvent extends Event {
+export interface ErrorEvent extends Event {
   type: 'error'
 }
 
-type SourceLoaded = (image: HTMLImageElement | null, event: LoadEvent | ErrorEvent) => void
+export type SourceLoaded = (image: HTMLImageElement | null, index: number, event: LoadEvent | ErrorEvent) => void
+export type SourcesCompleted = (length: number) => void
 
 /**
  * Load one image string source
@@ -25,6 +26,6 @@ export function Loader (source: string, sourceLoaded: SourceLoaded): void
  * @param sourceLoaded Callback executed per source loading. It includes 'success' or 'error' loadings.
  * If source loading was successful `image` param will contains an `HTMLImageElement`, otherwise `null`.
  * `event` param contains a 'load' or 'error' `Event` object
- * @param completed Callback executed when all image sources were loaded
+ * @param sourcesCompleted Callback executed when all image sources were loaded
  */
-export function Loader (sources: string[], sourceLoaded: SourceLoaded, completed?: () => void): void
+export function Loader (sources: string[], sourceLoaded: SourceLoaded, sourcesCompleted?: SourcesCompleted): void

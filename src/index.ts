@@ -1,30 +1,32 @@
-interface LoadEvent extends Event {
+export interface LoadEvent extends Event {
   type: 'load'
 }
 
-interface ErrorEvent extends Event {
+export interface ErrorEvent extends Event {
   type: 'error'
 }
 
-type SourceLoaded = (image: HTMLImageElement | null, event: LoadEvent | ErrorEvent) => void
+export type SourceLoaded = (image: HTMLImageElement | null, index: number, event: LoadEvent | ErrorEvent) => void
 
-const loadImage = (source: string, loaded: SourceLoaded) => {
+export type SourcesCompleted = (length: number) => void
+
+const loadImage = (source: string, index: number, done: SourceLoaded) => {
   const img = new Image()
-  img.onload = (event: Event) => loaded(event.target as HTMLImageElement, event as LoadEvent)
-  img.onerror = (event: Event) => loaded(null, event as ErrorEvent)
+  img.onload = (event: Event) => done(event.target as HTMLImageElement, index, event as LoadEvent)
+  img.onerror = (event: Event) => done(null, index, event as ErrorEvent)
   img.src = source
 }
 
-const loadImages = (sources: string[], loaded: SourceLoaded, completed?: () => void) => {
+const loadImages = (sources: string[], done: SourceLoaded, completed?: SourcesCompleted) => {
   if (!sources.length) return
 
   const load = (i: number) => {
     if (i < sources.length) {
-      loadImage(sources[i], (image: HTMLImageElement | null, event: LoadEvent | ErrorEvent) => {
-        loaded(image, event)
+      loadImage(sources[i], i, (image: HTMLImageElement | null, index: number, event: LoadEvent | ErrorEvent) => {
+        done(image, index, event)
         load(i + 1)
       })
-    } else if (completed) completed()
+    } else if (completed) completed(i)
   }
 
   load(0)
@@ -47,11 +49,10 @@ export function Loader (source: string, sourceLoaded: SourceLoaded): void
  * @param sourceLoaded Callback executed per source loading. It includes 'success' or 'error' loadings.
  * If source loading was successful `image` param will contains an `HTMLImageElement`, otherwise `null`.
  * `event` param contains a 'load' or 'error' `Event` object
- * @param completed Callback executed when all image sources were loaded
+ * @param sourcesCompleted Callback executed when all image sources were loaded
  */
-export function Loader (sources: string[], sourceLoaded: SourceLoaded, completed?: () => void): void
+export function Loader (sources: string[], sourceLoaded: SourceLoaded, sourcesCompleted?: SourcesCompleted): void
 
-export function Loader (source: string | string[], sourceLoaded: SourceLoaded, completed?: () => void) {
-  if (Array.isArray(source)) loadImages(source, sourceLoaded, completed)
-  else loadImage(source, sourceLoaded)
+export function Loader (source: string | string[], sourceLoaded: SourceLoaded, sourcesCompleted?: SourcesCompleted) {
+  loadImages(Array.isArray(source) ? source : [ source ], sourceLoaded, sourcesCompleted)
 }
