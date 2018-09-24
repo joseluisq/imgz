@@ -2,6 +2,8 @@
 
 > Tiny image sources loader. :framed_picture:
 
+__Imgz__ just loads string image URLs by index emitting a callback with `image`, `index` and `event` parameters per load.
+
 ## Install
 
 [Yarn](https://github.com/yarnpkg/)
@@ -16,13 +18,13 @@ yarn add imgz
 npm install imgz --save
 ```
 
-The [UMD](https://github.com/umdjs/umd) and style builds are also available on [unpkg](https://unpkg.com).
+The [UMD](https://github.com/umdjs/umd) build is also available on [unpkg](https://unpkg.com).
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/imgz/dist/imgz.min.css">
+<link rel="stylesheet" href="https://unpkg.com/imgz/dist/imgz.min.js">
 ```
 
-You can use the component via `window.imgz`
+You can use the library via `window.imgz`
 
 ## Usage
 
@@ -30,22 +32,24 @@ You can use the component via `window.imgz`
 import { Loader } from 'imgz'
 
 const images = [
-  'https://i.imgur.com/G5MR088.png',
-  'http://server/not-found-image.png',
-  'https://i.imgur.com/G5MR088.png'
+  'https://i.imgur.com/G5MR088.png',   // ok!
+  'http://server/not-found-image.png', // error!
+  'https://i.imgur.com/G5MR088.png'    // ok!
 ]
 
-Loader (images, (image, index, event) => console.log('Image loaded:', image))
+Loader(images, (image: HTMLImageElement | null, index: number, event: LoadEvent | ErrorEvent) => { })
 ```
 
 ## API
 
 ```ts
-Loader (
+function Loader (
   // Sources
   source: string | string[],
+
   // Source loaded
   (image: HTMLImageElement | null, index: number, event: LoadEvent | ErrorEvent) => void,
+
   // Sources completed (optional)
   (length: number) => void
 )
