@@ -38,7 +38,7 @@
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.2",
     "karma-spec-reporter": "0.0.32",
-    "karma-typescript": "3.0.13",
+    "karma-typescript": "4.0.0",
     "rollup": "0.68.2",
     "rollup-plugin-commonjs": "9.3.4",
     "rollup-plugin-node-resolve": "3.4.0",
